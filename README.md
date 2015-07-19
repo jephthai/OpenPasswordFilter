@@ -4,7 +4,7 @@ OpenPasswordFilter is an open source custom password filter DLL and userspace se
 
 The genesis of this idea comes from conducting many penetration tests where organizationas have users who choose common passwords
 and the ultimate difficulty of controlling this behavior.  The fact is that any domain of size will have some user who chose
-`Password` or `Summer2015` or `Company123` as their password.  Any intruder or low-privilege user who can guess or obtain
+`Password1` or `Summer2015` or `Company123` as their password.  Any intruder or low-privilege user who can guess or obtain
 usernames for the domain can easily run through these very common passwords an start expanding the level of access in the 
 domain.
 
