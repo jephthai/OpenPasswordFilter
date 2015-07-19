@@ -31,6 +31,10 @@ architecture works so you understand what's going on.
 
 Installation
 ------------
+You can download a precompiled 64-bit version of OPF from the following link:
+
+[OPF-alpha.zip](https://github.com/jephthai/OpenPasswordFilter/raw/master/OPF-alpha.zip)
+
 For this to work at all, you must have complexity requirements enabled.  This is in the local security policy for the 
 domain controller -- here is some documentation from Microsoft for enabling it:
 
