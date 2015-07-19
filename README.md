@@ -26,6 +26,8 @@ of forbidden values.  This architecture is selected because it is difficult to r
 are likely loathe to reboot their DCs when they want to add another forbidden password to the list.  Just bear in mind how this
 architecture works so you understand what's going on.
 
+**NOTE** The current version is very ALPHA!  I have tested it on some of my DCs, but your mileage may vary and you may wish to test in a safe location before using this in real life.
+
 Installation
 ------------
 For this to work at all, you must have complexity requirements enabled.  This is in the local security policy for the 
