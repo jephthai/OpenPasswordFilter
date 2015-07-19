@@ -5,7 +5,7 @@ OpenPasswordFilter is an open source custom password filter DLL and userspace se
 The genesis of this idea comes from conducting many penetration tests where organizationas have users who choose common passwords
 and the ultimate difficulty of controlling this behavior.  The fact is that any domain of size will have some user who chose
 `Password1` or `Summer2015` or `Company123` as their password.  Any intruder or low-privilege user who can guess or obtain
-usernames for the domain can easily run through these very common passwords an start expanding the level of access in the 
+usernames for the domain can easily run through these very common passwords and start expanding the level of access in the 
 domain.
 
 Microsoft provides a wonderful feature in Active Directory, which is the ability to create a custom password filter DLL.  This
@@ -14,6 +14,7 @@ replies with a `TRUE` or `FALSE`, as appropriate, to indicate that the password 
 
 There are some commercial options, but they are usually in the "call for pricing" category, and that makes it a little 
 prohibitive for some organizations to implement truly effective preventive controls for this class of very common bad passwords.  
+
 This is where OpenPasswordFilter comes in -- an open source solution to add basic dictionary-based rejection of common passwords.
 
 OPF is comprised of two main parts:
