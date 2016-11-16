@@ -150,7 +150,7 @@ extern "C" __declspec(dllexport) BOOLEAN __stdcall PasswordFilter(PUNICODE_STRIN
 			if (sock == INVALID_SOCKET) {
 				break;
 			}
-			i = connect(sock, ptr->ai_addr, (int)ptr->ai_addr);
+			i = connect(sock, ptr->ai_addr, (int)ptr->ai_addrlen);
 			if (i == SOCKET_ERROR) {
 				closesocket(sock);
 				sock = INVALID_SOCKET;
