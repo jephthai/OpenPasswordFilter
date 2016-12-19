@@ -32,7 +32,7 @@ namespace OPFService {
         }
 
         public void main() {
-            IPAddress ip = IPAddress.Parse("0.0.0.0");
+            IPAddress ip = IPAddress.Parse("127.0.0.1");
             IPEndPoint local = new IPEndPoint(ip, 5999);
             Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -57,6 +57,9 @@ namespace OPFService {
                 if (command == "test") {
                     string password = istream.ReadLine();
                     ostream.WriteLine(dict.contains(password) ? "false" : "true");
+                    ostream.Flush();
+                } else {
+                    ostream.WriteLine("ERROR");
                     ostream.Flush();
                 }
             } catch (Exception e) {

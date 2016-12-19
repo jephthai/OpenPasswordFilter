@@ -144,13 +144,16 @@ extern "C" __declspec(dllexport) BOOLEAN __stdcall PasswordFilter(PUNICODE_STRIN
 	// wrong? ;-)
 
 	i = getaddrinfo("127.0.0.1", "5999", &hints, &result);
+
 	if (i == 0) {
+
 		for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
+
 			sock = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
 			if (sock == INVALID_SOCKET) {
 				break;
 			}
-			i = connect(sock, ptr->ai_addr, (int)ptr->ai_addr);
+			i = connect(sock, ptr->ai_addr, (int)ptr->ai_addrlen);
 			if (i == SOCKET_ERROR) {
 				closesocket(sock);
 				sock = INVALID_SOCKET;
@@ -164,12 +167,7 @@ extern "C" __declspec(dllexport) BOOLEAN __stdcall PasswordFilter(PUNICODE_STRIN
 			closesocket(sock);
 		}
 	}
-
-	// MS documentation suggests doing this.  I honestly don't know why LSA
-	// doesn't just do this for you after we return.  But, I'll do what the
-	// docs say...
-
-	SecureZeroMemory(Password->Buffer, Password->Length);
+	
 	return retval;
 }
 
