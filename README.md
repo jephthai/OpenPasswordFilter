@@ -4,8 +4,8 @@ OpenPasswordFilter is an open source custom password filter DLL and userspace se
 
 The genesis of this idea comes from conducting many penetration tests where organizationas have users who choose common passwords
 and the ultimate difficulty of controlling this behavior.  The fact is that any domain of size will have some user who chose
-`Password` or `Summer2015` or `Company123` as their password.  Any intruder or low-privilege user who can guess or obtain
-usernames for the domain can easily run through these very common passwords an start expanding the level of access in the 
+`Password1` or `Summer2015` or `Company123` as their password.  Any intruder or low-privilege user who can guess or obtain
+usernames for the domain can easily run through these very common passwords and start expanding the level of access in the 
 domain.
 
 Microsoft provides a wonderful feature in Active Directory, which is the ability to create a custom password filter DLL.  This
@@ -14,6 +14,7 @@ replies with a `TRUE` or `FALSE`, as appropriate, to indicate that the password 
 
 There are some commercial options, but they are usually in the "call for pricing" category, and that makes it a little 
 prohibitive for some organizations to implement truly effective preventive controls for this class of very common bad passwords.  
+
 This is where OpenPasswordFilter comes in -- an open source solution to add basic dictionary-based rejection of common passwords.
 
 OPF is comprised of two main parts:
@@ -26,8 +27,14 @@ of forbidden values.  This architecture is selected because it is difficult to r
 are likely loathe to reboot their DCs when they want to add another forbidden password to the list.  Just bear in mind how this
 architecture works so you understand what's going on.
 
+**NOTE** The current version is very ALPHA!  I have tested it on some of my DCs, but your mileage may vary and you may wish to test in a safe location before using this in real life.
+
 Installation
 ------------
+You can download a precompiled 64-bit version of OPF from the following link:
+
+[OPF-alpha.zip](https://github.com/jephthai/OpenPasswordFilter/raw/master/OPF-alpha.zip)
+
 For this to work at all, you must have complexity requirements enabled.  This is in the local security policy for the 
 domain controller -- here is some documentation from Microsoft for enabling it:
 
