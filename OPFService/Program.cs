@@ -34,8 +34,7 @@ namespace OPFService {
 
         protected override void OnStart(string[] args) {
             base.OnStart(args);
-            // OPFDictionary d = new OPFDictionary(AppDomain.CurrentDomain.BaseDirectory + "\\opfdict.txt");
-            OPFDictionary d = new OPFDictionary("c:\\opf\\opfdict.txt");
+            OPFDictionary d = new OPFDictionary(AppDomain.CurrentDomain.BaseDirectory);
             NetworkService svc = new NetworkService(d);
             worker = new Thread(() => svc.main());
             worker.Start();
