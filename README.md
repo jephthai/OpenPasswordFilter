@@ -68,7 +68,7 @@ Passwords in `opfmatch.txt` will be tested for full matches, and those in `opfco
 is useful for rejecting any password containing poison strings such as `password` and `welcome`. I recommend constructing a list
 of bad seeds, then using hashcat rules to build `opfcont.txt` with the sort of leet mangling users are likely to try, like so:
 
-`hashcat -r /usr/share/hashcat/rules/Incisive-leetspeak.rule --stdout word | tr A-Z a-z | sort | uniq > opfcont.txt`
+`hashcat -r /usr/share/hashcat/rules/Incisive-leetspeak.rule --stdout seedwordlist | tr A-Z a-z | sort | uniq > opfcont.txt`
 
 Bear in mind that if you use a unix like system to create your wordlists, the line terminators will need changing to Windows
 format:
