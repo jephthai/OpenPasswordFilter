@@ -78,7 +78,13 @@ format:
 If the service fails to start, it's likely an error ingesting the wordlists, and the line number of the problem entry will be
 written to the Application event log.
 
-Or you can skip all this and use one of the installers. The filter DLL bitness must match the OS, so choose correctly. .Net 3.5
+Or you can skip all this and use one of the installers. 
+
+   https://github.com/brockrob/OpenPasswordFilter/blob/master/OPFInstaller_x64.zip
+   
+   https://github.com/brockrob/OpenPasswordFilter/blob/master/OPFInstaller_x86.zip
+
+The filter DLL bitness must match the OS, so choose correctly. .Net 3.5
 is still required and the installer won't handle installing it for you because Visual Studio packaging a bootstrap package for
 that version has been broken since 2008 and I didn't have the patience to roll a custom action to test the OS version and go
 down the appropriate installation path (DISM vs .exe). I also can't set the reboot flag in the MSI with Visual Studio, so you'll
