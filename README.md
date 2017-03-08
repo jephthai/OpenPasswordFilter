@@ -13,9 +13,10 @@ DLL is loaded by LSASS on boot (if configured), and will be queried for each new
 replies with a `TRUE` or `FALSE`, as appropriate, to indicate that the password passes or fails the test.  
 
 There are some commercial options, but they are usually in the "call for pricing" category, and that makes it a little 
-prohibitive for some organizations to implement truly effective preventive controls for this class of very common bad passwords.  
+prohibitive for some organizations to implement truly effective preventive controls for this class of very common bad passwords. 
 
-This is where OpenPasswordFilter comes in -- an open source solution to add basic dictionary-based rejection of common passwords.
+This is where OpenPasswordFilter comes in -- an open source solution to add basic dictionary-based rejection of common
+passwords.
 
 OPF is comprised of two main parts:
 
@@ -27,7 +28,8 @@ of forbidden values.  This architecture is selected because it is difficult to r
 are likely loathe to reboot their DCs when they want to add another forbidden password to the list.  Just bear in mind how this
 architecture works so you understand what's going on.
 
-**NOTE** The current version is very ALPHA!  I have tested it on some of my DCs, but your mileage may vary and you may wish to test in a safe location before using this in real life.
+**NOTE** The current version is very ALPHA!  I have tested it on some of my DCs, but your mileage may vary and you may wish to
+test in a safe location before using this in real life.
 
 Installation
 ------------
@@ -62,18 +64,29 @@ one forbidden password per line, such as:
     Summer2015
     ...
 
-Passwords in `opfmatch.txt` will be tested for full matches, and those in `opfcont.txt` will be tested for a partial match. This is
-useful for rejecting any password containing poison strings such as `password` and `welcome`. I recommend constructing a list of 
-bad seeds, then using hashcat rules to build `opfcont.txt` with the sort of leet mangling users are likely to try, like so:
+Passwords in `opfmatch.txt` will be tested for full matches, and those in `opfcont.txt` will be tested for a partial match. This
+is useful for rejecting any password containing poison strings such as `password` and `welcome`. I recommend constructing a list
+of bad seeds, then using hashcat rules to build `opfcont.txt` with the sort of leet mangling users are likely to try, like so:
 
 `hashcat -r /usr/share/hashcat/rules/Incisive-leetspeak.rule --stdout word | tr A-Z a-z | sort | uniq > opfcont.txt`
 
-Bear in mind that if you use a unix like system to create your wordlists, the line terminators will need changing to Windows format:
+Bear in mind that if you use a unix like system to create your wordlists, the line terminators will need changing to Windows
+format:
 
 `unix2dos opfcont.txt`
 
-If the service fails to start, it's likely an error ingesting the wordlists, and the line number of the problem entry will be written
-to the Application event log.
+If the service fails to start, it's likely an error ingesting the wordlists, and the line number of the problem entry will be
+written to the Application event log.
+
+Or you can skip all this and use one of the installers. The filter DLL bitness must match the OS, so choose correctly. .Net 3.5
+is still required and the installer won't handle installing it for you because Visual Studio packaging a bootstrap package for
+that version has been broken since 2008 and I didn't have the patience to roll a custom action to test the OS version and go
+down the appropriate installation path (DISM vs .exe). I also can't set the reboot flag in the MSI with Visual Studio, so you'll
+have to manually do that as well, but it still saves some significant legwork.
+
+The installers include lists. The match list is rockyou.txt with every line less than ten characters stripped out, lowered,
+sorted, and de-duped. The other was made as described above with hashcat rules from a seed set containing some dumb words 
+I've seen people base passwords on as well as some terms specific to my employer and their industry.
 
 If all has gone well, reboot your DC and test by using the normal GUI password reset function to choose a password that is on
 your forbidden list.
