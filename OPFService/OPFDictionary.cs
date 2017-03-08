@@ -43,7 +43,7 @@ namespace OPFService {
                     using (EventLog eventLog = new EventLog("Application"))
                     {
                         eventLog.Source = "Application";
-                        eventLog.WriteEntry("Died trying to ingest line number " + a.ToString(), EventLogEntryType.Information, 101, 1);
+                        eventLog.WriteEntry("Died trying to ingest line number " + a.ToString() + " of opfmatch.txt.", EventLogEntryType.Information, 101, 1);
                     }
                 }
             }
@@ -63,7 +63,7 @@ namespace OPFService {
                     using (EventLog eventLog = new EventLog("Application"))
                     {
                         eventLog.Source = "Application";
-                        eventLog.WriteEntry("Died trying to ingest line number " + a.ToString(), EventLogEntryType.Information, 101, 1);
+                        eventLog.WriteEntry("Died trying to ingest line number " + a.ToString() + " of opfcont.txt.", EventLogEntryType.Information, 101, 1);
                     }
                 }
             }

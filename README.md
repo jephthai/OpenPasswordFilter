@@ -2,7 +2,7 @@ Introduction
 ------------
 OpenPasswordFilter is an open source custom password filter DLL and userspace service to better protect / control Active Directory domain passwords.
 
-The genesis of this idea comes from conducting many penetration tests where organizationas have users who choose common passwords
+The genesis of this idea comes from conducting many penetration tests where organizations have users who choose common passwords
 and the ultimate difficulty of controlling this behavior.  The fact is that any domain of size will have some user who chose
 `Password1` or `Summer2015` or `Company123` as their password.  Any intruder or low-privilege user who can guess or obtain
 usernames for the domain can easily run through these very common passwords and start expanding the level of access in the 
@@ -33,7 +33,7 @@ Installation
 ------------
 You can download a precompiled 64-bit version of OPF from the following link:
 
-[OPF-alpha.zip](https://github.com/jephthai/OpenPasswordFilter/raw/master/OPF-alpha.zip)
+[OPF-alpha.zip](https://github.com/brockrob/OpenPasswordFilter/raw/master/OPF-alpha.zip)
 
 For this to work at all, you must have complexity requirements enabled.  This is in the local security policy for the 
 domain controller -- here is some documentation from Microsoft for enabling it:
@@ -57,7 +57,7 @@ Next, you will want to configure the OPF service.  You can do so as follows (sup
 
     > sc create OPF binPath= c:\opf\opfservice.exe start= boot
 
-Finally, create a dictionary file in the same directory where `opfservice.exe` lives named `opfdict.txt`.  This should contain
+Finally, create two dictionary files in c:\windows\system32\ named `opfmatch.txt` and `opfcont.txt`.  These should contain
 one forbidden password per line, such as:
 
     Password1
@@ -66,6 +66,19 @@ one forbidden password per line, such as:
     Summer15
     Summer2015
     ...
+
+Passwords in `opfmatch.txt` will be tested for full matches, and those in `opfcont.txt` will be tested for a partial match. This is
+useful for rejecting any password containing poison strings such as `password` and `welcome`. I recommend constructing a list of 
+bad seeds, then using hashcat rules to build `opfcont.txt` with the sort of leet mangling users are likely to try, like so:
+
+`hashcat -r /usr/share/hashcat/rules/Incisive-leetspeak.rule --stdout word | tr A-Z a-z | sort | uniq > opfcont.txt`
+
+Bear in mind that if you use a unix like system to create your wordlists, the line terminators will need changing to Windows format:
+
+`unix2dos opfcont.txt`
+
+If the service fails to start, it's likely an error ingesting the wordlists, and the line number of the problem entry will be written
+to the Application event log.
 
 If all has gone well, reboot your DC and test by using the normal GUI password reset function to choose a password that is on
 your forbidden list.
