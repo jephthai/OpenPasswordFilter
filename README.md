@@ -80,9 +80,9 @@ written to the Application event log.
 
 Or you can skip all this and use one of the installers. 
 
-   https://github.com/brockrob/OpenPasswordFilter/blob/master/OPFInstaller_x64.zip
+   https://github.com/brockrob/OpenPasswordFilter/raw/master/OPFInstaller_x64.zip
    
-   https://github.com/brockrob/OpenPasswordFilter/blob/master/OPFInstaller_x86.zip
+   https://github.com/brockrob/OpenPasswordFilter/raw/master/OPFInstaller_x86.zip
 
 The filter DLL bitness must match the OS, so choose correctly. .Net 3.5
 is still required and the installer won't handle installing it for you because Visual Studio packaging a bootstrap package for
