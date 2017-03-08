@@ -53,9 +53,9 @@ The bottom line is this:
   
 Note, you do not include the `.dll` extension in the registry key -- just `OpenPasswordFilter`.
 
-Next, you will want to configure the OPF service.  You can do so as follows (suppose you have installed the files in `C:\OPF`):
+Next, you will want to configure the OPF service.  You can do so as follows:
 
-    > sc create OPF binPath= c:\opf\opfservice.exe start= boot
+    > sc create OPF binPath= c:\windows\system32\opfservice.exe start= boot
 
 Finally, create two dictionary files in c:\windows\system32\ named `opfmatch.txt` and `opfcont.txt`.  These should contain
 one forbidden password per line, such as:
