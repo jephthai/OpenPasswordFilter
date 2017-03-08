@@ -35,11 +35,6 @@ You can download a precompiled 64-bit version of OPF from the following link:
 
 [OPF-alpha.zip](https://github.com/brockrob/OpenPasswordFilter/raw/master/OPF-alpha.zip)
 
-For this to work at all, you must have complexity requirements enabled.  This is in the local security policy for the 
-domain controller -- here is some documentation from Microsoft for enabling it:
-
-  https://technet.microsoft.com/en-us/library/Cc786468(v=WS.10).aspx
-
 You will want to configure the DLL so that Windows will load it for filtering passwords.  Note that you will have to do this
 on all domain controllers, as any of them may end up servicing a password change request.  Here is a link to Microsoft's
 documentation for setting up a password filter:
@@ -53,9 +48,9 @@ The bottom line is this:
   
 Note, you do not include the `.dll` extension in the registry key -- just `OpenPasswordFilter`.
 
-Next, you will want to configure the OPF service.  You can do so as follows (suppose you have installed the files in `C:\OPF`):
+Next, you will want to configure the OPF service.  You can do so as follows:
 
-    > sc create OPF binPath= c:\opf\opfservice.exe start= boot
+    > sc create OPF binPath= c:\windows\system32\opfservice.exe start= boot
 
 Finally, create two dictionary files in c:\windows\system32\ named `opfmatch.txt` and `opfcont.txt`.  These should contain
 one forbidden password per line, such as:
