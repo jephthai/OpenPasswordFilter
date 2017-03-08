@@ -92,7 +92,7 @@ have to manually do that as well, but it still saves some significant legwork.
 
 The installers include lists. The match list is rockyou.txt with every line less than ten characters stripped out, lowered,
 sorted, and de-duped. The other was made as described above with hashcat rules from a seed set containing some dumb words 
-I've seen people base passwords on as well as some terms specific to my employer and their industry.
+I've seen people base passwords on as well as some terms relevant to my environment (company names, industry terms, etc).
 
 If all has gone well, reboot your DC and test by using the normal GUI password reset function to choose a password that is on
 your forbidden list.
