@@ -34,8 +34,8 @@ namespace OPFService {
 
         protected override void OnStart(string[] args) {
             base.OnStart(args);
-            // OPFDictionary d = new OPFDictionary(AppDomain.CurrentDomain.BaseDirectory + "\\opfdict.txt");
-            OPFDictionary d = new OPFDictionary("c:\\opf\\opfdict.txt");
+            OPFDictionary d = new OPFDictionary(AppDomain.CurrentDomain.BaseDirectory + "\\opfmatch.txt", AppDomain.CurrentDomain.BaseDirectory + "opfcont.txt");
+            // OPFDictionary d = new OPFDictionary("c:\\windows\\system32\\opfmatch.txt", "c:\\windows\\system32\\opfcont.txt");
             NetworkService svc = new NetworkService(d);
             worker = new Thread(() => svc.main());
             worker.Start();
@@ -44,6 +44,15 @@ namespace OPFService {
         protected override void OnShutdown() {
             base.OnShutdown();
             worker.Abort();
+        }
+
+        private void InitializeComponent()
+        {
+            // 
+            // OPFService
+            // 
+            this.ServiceName = "OPF";
+
         }
     }
 }
