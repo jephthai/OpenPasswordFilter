@@ -52,10 +52,10 @@ Note, you do not include the `.dll` extension in the registry key -- just `OpenP
 
 Next, you will want to configure the OPF service.  You can do so as follows:
 
-    > sc create OPF binPath= c:\windows\system32\opfservice.exe start= boot
+    > sc create OPF binPath= <full path to exe>\opfservice.exe start= boot
 
-Finally, create two dictionary files in c:\windows\system32\ named `opfmatch.txt` and `opfcont.txt`.  These should contain
-one forbidden password per line, such as:
+Finally, create two dictionary files in the same directory where you placed opfservice.exe named `opfmatch.txt` and
+`opfcont.txt`.  These should contain one forbidden password per line, such as:
 
     Password1
     Password2
