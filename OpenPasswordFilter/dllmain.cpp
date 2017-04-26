@@ -86,31 +86,38 @@ PasswordChangeNotify(PUNICODE_STRING *UserName,
 //
 //    <connect>
 //    client:   test\n
-//    client:   Password1\n
+//    client:   AccountName\nPassword1\n
 //    server:   false\n
 //    <disconnect>
 //
 
-BOOLEAN askServer(SOCKET sock, PUNICODE_STRING Password) {
-	char buffer[1024];
+BOOLEAN askServer(SOCKET sock, PUNICODE_STRING AccountName, PUNICODE_STRING Password) {
+	char buffer[1024], pbuffer[1024];
 	char *preamble = "test\n";
-	int i;
+	int ui, pi, i;
 
 	i = send(sock, preamble, (int)strlen(preamble), 0);
 	if (i != SOCKET_ERROR) {
-		int length = Password->Length / sizeof(WCHAR);
-		if (length + 2 < sizeof(buffer)) {
-			i = wcstombs(buffer, Password->Buffer, length);
-			buffer[i] = '\n';
-			buffer[i + 1] = '\0';
+		// +4 for separator and null (really username\npassword\n\0 after strcat)
+		int length = Password->Length / sizeof(WCHAR) + AccountName->Length / sizeof(WCHAR) + 4; 
+		if (length < sizeof(buffer)) {
+			ui = wcstombs(buffer, AccountName->Buffer, AccountName->Length / sizeof(WCHAR));
+			buffer[ui] = '\n';
+			buffer[ui + 1] = '\0';
+			pi = wcstombs(pbuffer, Password->Buffer, Password->Length / sizeof(WCHAR));
+			pbuffer[pi] = '\n';
+			pbuffer[pi + 1] = '\0';
+			strcat_s(buffer, 1024, pbuffer);
+			SecureZeroMemory(pbuffer, pi);
 			i = send(sock, buffer, (int)strlen(buffer), 0);
+			SecureZeroMemory(buffer, length);
 			if (i != SOCKET_ERROR) {
 				i = recv(sock, buffer, sizeof(buffer), 0);
 				if (i > 0 && buffer[0] == 'f') {
 					return FALSE;
 				}
 			}
-		}
+		} // else: buffer overflow...
 	}
 
 	return TRUE;
@@ -163,7 +170,7 @@ extern "C" __declspec(dllexport) BOOLEAN __stdcall PasswordFilter(PUNICODE_STRIN
 		}
 
 		if (sock != INVALID_SOCKET) {
-			retval = askServer(sock, Password);
+			retval = askServer(sock, AccountName, Password);
 			closesocket(sock);
 		}
 	}

@@ -32,16 +32,18 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	WSADATA wsa;
 	PUNICODE_STRING pwd;
+	PUNICODE_STRING username;
 
 	pwd = (PUNICODE_STRING) malloc(sizeof(PUNICODE_STRING));
+	username = (PUNICODE_STRING)malloc(sizeof(PUNICODE_STRING));
 
 	printf("\n");
 	printf("----------------------------------------------------------------------\n");
 	printf("Test program for OpenPasswordFilter.dll (Josh Stone, yakovdk@gmail.com)\n");
 	printf("----------------------------------------------------------------------\n");
 	printf("\n");
-	if (argc < 2) {
-		printf("usage: opftest <password>\n");
+	if (argc < 3) {
+		printf("usage: opftest <username> <password>\n");
 		return 2;
 	}
 
@@ -63,11 +65,15 @@ int _tmain(int argc, _TCHAR* argv[])
 			if (PasswordFilter == NULL) {
 				return 1;
 			}
-			wprintf(L"Testing password %s...", argv[1]);
-			pwd->Length = wcslen(argv[1]) * sizeof(WCHAR);
-			pwd->MaximumLength = wcslen(argv[1]) * sizeof(WCHAR);
-			pwd->Buffer = argv[1];
-			if (PasswordFilter(pwd, pwd, pwd, 1)) {
+			wprintf(L"Testing username %s and password %s...", argv[1], argv[2]);
+			username->Length = wcslen(argv[1]) * sizeof(WCHAR);
+			username->MaximumLength = wcslen(argv[1]) * sizeof(WCHAR);
+			username->Buffer = argv[1];
+
+			pwd->Length = wcslen(argv[2]) * sizeof(WCHAR);
+			pwd->MaximumLength = wcslen(argv[2]) * sizeof(WCHAR);
+			pwd->Buffer = argv[2];
+			if (PasswordFilter(username, pwd, pwd, 1)) {
 				printf("success.\n");
 			}
 			else {
