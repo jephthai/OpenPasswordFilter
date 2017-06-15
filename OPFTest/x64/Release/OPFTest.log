@@ -1,0 +1,15 @@
+﻿  OPFTest.cpp
+OPFTest.cpp(69): warning C4267: '=': conversion from 'size_t' to 'USHORT', possible loss of data
+OPFTest.cpp(70): warning C4267: '=': conversion from 'size_t' to 'USHORT', possible loss of data
+OPFTest.cpp(73): warning C4267: '=': conversion from 'size_t' to 'USHORT', possible loss of data
+OPFTest.cpp(74): warning C4267: '=': conversion from 'size_t' to 'USHORT', possible loss of data
+OPFTest.cpp(60): warning C4477: 'printf' : format string '%08x' requires an argument of type 'unsigned int', but variadic argument 1 has type 'HMODULE'
+OPFTest.cpp(60): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'HMODULE'
+OPFTest.cpp(64): warning C4477: 'printf' : format string '%08x' requires an argument of type 'unsigned int', but variadic argument 1 has type 'PasswordFilter_t'
+OPFTest.cpp(64): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'PasswordFilter_t'
+  stdafx.cpp
+  Generating code
+  All 8 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  OPFTest.vcxproj -> C:\Users\cdebbo.KCDSB\Documents\GitHub\OpenPasswordFilter\x64\Release\OPFTest.exe
+  OPFTest.vcxproj -> C:\Users\cdebbo.KCDSB\Documents\GitHub\OpenPasswordFilter\x64\Release\OPFTest.pdb (Full PDB)
