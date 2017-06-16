@@ -24,9 +24,10 @@ OPF is comprised of two main parts:
    2. OPFService.exe -- this is a C#-based service binary that provides a local user-space service for maintaining the dictionary and servicing requests.
   
 The DLL communicates with the service on the loopback network interface to check passwords against the configured database
-of forbidden values.  This architecture is selected because it is difficult to reload the DLL after boot, and administrators
-are likely loathe to reboot their DCs when they want to add another forbidden password to the list.  Just bear in mind how this
-architecture works so you understand what's going on.
+of forbidden values, as well as ensuring that the account's SAMAccountName, given name, surname, and display name are not in the password.  
+This architecture is selected because it is difficult to reload the DLL after boot, and administrators are likely loathe to 
+reboot their DCs when they want to add another forbidden password to the list.  Just bear in mind how this architecture works 
+so you understand what's going on.
 
 **NOTE** The current version is very ALPHA!  I have tested it on some of my DCs, but your mileage may vary and you may wish to
 test in a safe location before using this in real life.
@@ -97,31 +98,32 @@ format:
 If the service fails to start, it's likely an error ingesting the wordlists, and the line number of the problem entry will be
 written to the Application event log.
 
-Or you can skip all this and use one of the installers. 
+Or you can skip all this and use the installer. 
 
    https://github.com/brockrob/OpenPasswordFilter/raw/master/OPFInstaller_x64.zip
-   
-   https://github.com/brockrob/OpenPasswordFilter/raw/master/OPFInstaller_x86.zip
 
 ### opfregex.txt
-Similar to the opfmatch and opfconf files, include here regular expression - one per line - for invalid passwords. Example, including 'xx.*xx' will catch all passwords that have two x's followed by any text followed by two x's. Keep this list short as regular expression matching is more computationally expensive than simple matching or contains searches.
+Similar to the opfmatch and opfconf files, include here regular expression - one per line - for invalid passwords. Example, 
+including 'xx.*xx' will catch all passwords that have two x's followed by any text followed by two x's. Keep this list short 
+as regular expression matching is more computationally expensive than simple matching or contains searches.
 
 ### opfgroups.txt
-This file contains zero or more Active-Directory group names - one per line. These can be security or distribution groups. A user is considered to be in a group if they are a descendent child of the group. A user's password will only be checked if the user is a member of any group listed in this file. If the file is present but contains no groups then every user will be checked.
+This file contains zero or more Active-Directory group names - one per line. These can be security or distribution groups. 
+A user is considered to be in a group if they are a descendent child of the group. A user's password will only be checked 
+if the user is a member of any group listed in this file. If the file is present but contains no groups then every user will be checked.
 
 ## Event Logging
 The opfservice.exe application logs to the Application Event Log using codes 100, and 101. Searching the event log will identify what the opfservice is checking.
 
 ## Production Installation Details
-The filter DLL bitness must match the OS, so choose correctly. .Net 3.5
-is still required and the installer won't handle installing it for you because Visual Studio packaging a bootstrap package for
-that version has been broken since 2008 and I didn't have the patience to roll a custom action to test the OS version and go
-down the appropriate installation path (DISM vs .exe). I also can't set the reboot flag in the MSI with Visual Studio, so you'll
-have to manually do that as well, but it still saves some significant legwork.
+This requires a 64 bit OS as the password filter bitness must match that of the OS and I see no reason to target x86. If you 
+build it yourself against x86, it will probably work. I cannot set the reboot flag in the MSI with Visual Studio, so you'll
+have to manually do that, but it still saves some significant legwork.
 
-The installers include lists. The match list is rockyou.txt with every line less than ten characters stripped out, lowered,
-sorted, and de-duped. The other was made as described above with hashcat rules from a seed set containing some dumb words 
+The installer includes lists. The match list is rockyou.txt with every line less than ten characters stripped out, lowered,
+sorted, and de-duped. The 'contains' list was made as described above with hashcat rules from a seed set containing some dumb words 
 I've seen people base passwords on as well as some terms relevant to my environment (company names, industry terms, etc).
+The group and regex lists are empty.
 
 If all has gone well, reboot your DC and test by using the normal GUI password reset function to choose a password that is on
 your forbidden list.

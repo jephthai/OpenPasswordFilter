@@ -76,7 +76,7 @@ namespace OPFService {
           writeLog("Validating password for user " + username, EventLogEntryType.Information);
           if (group.contains(username)) {
             writeLog("User in a restricted group", EventLogEntryType.Information);
-            ostream.WriteLine(dict.contains(password) ? "false" : "true");
+            ostream.WriteLine(dict.contains(password, username) ? "false" : "true");
           } else {
             ostream.WriteLine("true");
           }

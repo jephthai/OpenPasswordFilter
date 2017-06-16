@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.DirectoryServices.AccountManagement;
 
 namespace OPFService {
   class OPFDictionary {
@@ -33,6 +34,12 @@ namespace OPFService {
         eventLog.WriteEntry(message, level, 101, 1);
       }
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="pathmatch"></param>
+    /// <param name="pathcont"></param>
+    /// <param name="pathregex"></param>
     public OPFDictionary(string pathmatch, string pathcont, string pathregex) {
 
       writeLog("Opening Match Configuration File", EventLogEntryType.Information);
@@ -46,10 +53,11 @@ namespace OPFService {
           matchlist.Add(line.ToLower());
           a += 1;
         } catch {
-          using (EventLog eventLog = new EventLog("Application")) {
-            eventLog.Source = "Application";
-            eventLog.WriteEntry("Died trying to ingest line number " + a.ToString() + " of opfmatch.txt.", EventLogEntryType.Error, 101, 1);
-          }
+                    writeLog("Died trying to ingest line number " + a.ToString() + " of opfmatch.txt", EventLogEntryType.Error);
+          //using (EventLog eventLog = new EventLog("Application")) {
+          //  eventLog.Source = "Application";
+          //  eventLog.WriteEntry("Died trying to ingest line number " + a.ToString() + " of opfmatch.txt.", EventLogEntryType.Error, 101, 1);
+          //}
         }
       }
       infilematch.Close();
@@ -62,13 +70,14 @@ namespace OPFService {
           contlist.Add(line.ToLower());
           a += 1;
         } catch {
-          using (EventLog eventLog = new EventLog("Application")) {
-            eventLog.Source = "Application";
-            eventLog.WriteEntry("Died trying to ingest line number " + a.ToString() + " of opfcont.txt.", EventLogEntryType.Error, 101, 1);
-          }
+                    writeLog("Died trying to ingest line number " + a.ToString() + " of opfcont.txt.", EventLogEntryType.Error);
+          //using (EventLog eventLog = new EventLog("Application")) {
+          //  eventLog.Source = "Application";
+          //  eventLog.WriteEntry("Died trying to ingest line number " + a.ToString() + " of opfcont.txt.", EventLogEntryType.Error, 101, 1);
+          //}
         }
       }
-      infilematch.Close();
+      infilecont.Close();
       writeLog("Opening Regular Expression Configuration File", EventLogEntryType.Information);
       StreamReader infileregex = new StreamReader(pathregex);
       regexlist = new List<Regex>();
@@ -90,7 +99,7 @@ namespace OPFService {
 
     }
 
-    public Boolean contains(string word) {
+    public Boolean contains(string word, string username) {
       foreach (string badstr in contlist) {
         if (word.ToLower().Contains(badstr)) {
           using (EventLog eventLog = new EventLog("Application")) {
@@ -121,7 +130,33 @@ namespace OPFService {
         }
       }
 
-      using (EventLog eventLog = new EventLog("Application")) {
+            Dictionary<string, string> namedict = new Dictionary<string, string>();
+            using (PrincipalContext context = new PrincipalContext(ContextType.Domain))
+            {
+                using (UserPrincipal user = UserPrincipal.FindByIdentity(context, username))
+                {
+                    if (user != null)
+                    {
+                        namedict.Add("full name", user.DisplayName);
+                        namedict.Add("given name", user.GivenName);
+                        namedict.Add("surname", user.Surname);
+                        namedict.Add("SAMAccountName", user.SamAccountName);
+                    }
+                }
+            }
+            foreach(string key in namedict.Keys)
+            { 
+                if (namedict[key] != null)
+                {
+                    if (word.ToLower().Contains(namedict[key].ToLower()))
+                    {
+                        writeLog("Password attempt contained the user's " + key + ",", EventLogEntryType.Information);
+                        return true;
+                    }
+                }
+            }
+
+            using (EventLog eventLog = new EventLog("Application")) {
         eventLog.Source = "Application";
         eventLog.WriteEntry("Password passed custom filter.", EventLogEntryType.Information, 101, 1);
       }
