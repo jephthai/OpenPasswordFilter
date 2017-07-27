@@ -66,13 +66,20 @@ or
 When the service is stopped, the various opf dictionary files can be updated.
 
 
-Finally, create several dictionary files in the same directory where you placed opfservice.exe.
+Finally, create several dictionary files in the the SYSVOL path '\\127.0.0.1\sysvol\testdomain.com\OPF\', obviously substituting
+your domain name. These are in SYSVOL so that they stay in sync across all domain controllers, and the service checks file
+modification time at the start of servicing a request and will read in the lists again if it has changed, so restarting the OPF
+service when modifying the lists is not necessary.
 
 These are
 - `opfmatch.txt`
 - `opfcont.txt`
 - `opfregex.txt`
 - `opfgroups.txt`
+
+Or you can skip all this and use the installer. 
+
+   https://github.com/brockrob/OpenPasswordFilter/raw/master/OPFInstaller_x64.zip
 
 ### opfmatch.txt and opfcont.txt
 These should contain one forbidden password per line, such as:
@@ -95,13 +102,6 @@ format:
 
 `unix2dos opfcont.txt`
 
-If the service fails to start, it's likely an error ingesting the wordlists, and the line number of the problem entry will be
-written to the Application event log.
-
-Or you can skip all this and use the installer. 
-
-   https://github.com/brockrob/OpenPasswordFilter/raw/master/OPFInstaller_x64.zip
-
 ### opfregex.txt
 Similar to the opfmatch and opfconf files, include here regular expression - one per line - for invalid passwords. Example, 
 including 'xx.*xx' will catch all passwords that have two x's followed by any text followed by two x's. Keep this list short 
@@ -114,6 +114,8 @@ if the user is a member of any group listed in this file. If the file is present
 
 ## Event Logging
 The opfservice.exe application logs to the Application Event Log using codes 100, and 101. Searching the event log will identify what the opfservice is checking.
+If the service fails to start, it's likely an error ingesting the wordlists, and the line number of the problem entry will be
+written to the Application event log.
 
 ## Production Installation Details
 This requires a 64 bit OS as the password filter bitness must match that of the OS and I see no reason to target x86. If you 

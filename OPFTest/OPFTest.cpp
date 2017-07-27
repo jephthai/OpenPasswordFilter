@@ -34,7 +34,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	PUNICODE_STRING pwd;
 	PUNICODE_STRING username;
 
-	pwd = (PUNICODE_STRING) malloc(sizeof(PUNICODE_STRING));
+	pwd = (PUNICODE_STRING)malloc(sizeof(PUNICODE_STRING));
 	username = (PUNICODE_STRING)malloc(sizeof(PUNICODE_STRING));
 
 	printf("\n");

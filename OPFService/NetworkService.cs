@@ -25,37 +25,48 @@ using System.Diagnostics;
 
 
 
-namespace OPFService {
-  class NetworkService {
+namespace OPFService
+{
+  class NetworkService
+  {
     OPFDictionary dict;
     OPFGroup group;
-    private void writeLog(string message, System.Diagnostics.EventLogEntryType level) {
-      using (EventLog eventLog = new EventLog("Application")) {
+    private void writeLog(string message, System.Diagnostics.EventLogEntryType level)
+    {
+      using (EventLog eventLog = new EventLog("Application"))
+      {
         eventLog.Source = "Application";
         eventLog.WriteEntry(message, level, 100, 1);
       }
     }
 
-    public NetworkService(OPFDictionary d, OPFGroup g) {
+    public NetworkService(OPFDictionary d, OPFGroup g)
+    {
       dict = d;
-      group = g; 
+      group = g;
     }
 
-    public void main() {
+    public void main(Socket listener)
+    {
       IPAddress ip = IPAddress.Parse("127.0.0.1");
       IPEndPoint local = new IPEndPoint(ip, 5999);
-      Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+      //Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-      try {
+      try
+      {
         listener.Bind(local);
         listener.Listen(64);
         writeLog("OpenPasswordFilter is now running.", EventLogEntryType.Information);
-        while (true) {
+        while (true)
+        {
           Socket client = listener.Accept();
           new Thread(() => handle(client)).Start();
         }
-      } catch (Exception e) {
-        // don't know what to do here
+      }
+      catch (Exception e)
+      {
+        writeLog(e.Message, EventLogEntryType.Error);
+        writeLog("Unable to bind local port", EventLogEntryType.Error);
       }
     }
 
@@ -64,29 +75,40 @@ namespace OPFService {
      *   if username/password combo is not acceptable then return "false" 
      * return "true"
      * */
-    public void handle(Socket client) {
-      try {
+
+    public void handle(Socket client)
+    {
+      try
+      {
         NetworkStream netStream = new NetworkStream(client);
         StreamReader istream = new StreamReader(netStream);
         StreamWriter ostream = new StreamWriter(netStream);
         string command = istream.ReadLine();
-        if (command == "test") {
+        if (command == "test")
+        {
           string username = istream.ReadLine();
           string password = istream.ReadLine();
           writeLog("Validating password for user " + username, EventLogEntryType.Information);
-          if (group.contains(username)) {
+          if (group.contains(username))
+          {
             writeLog("User in a restricted group", EventLogEntryType.Information);
             ostream.WriteLine(dict.contains(password, username) ? "false" : "true");
-          } else {
+          }
+          else
+          {
             ostream.WriteLine("true");
           }
           ostream.Flush();
-        } else {
+        }
+        else
+        {
           ostream.WriteLine("ERROR");
           ostream.Flush();
         }
-      } catch (Exception e) {
-
+      }
+      catch (Exception e)
+      {
+        writeLog(e.Message, EventLogEntryType.Error);
       }
       client.Close();
     }
