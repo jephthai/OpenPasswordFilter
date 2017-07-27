@@ -60,9 +60,6 @@ or
 
     > NET STOP OPF
 
-When the service is stopped, the various opf dictionary files can be updated.
-
-
 Finally, create several dictionary files in the the SYSVOL path '\\127.0.0.1\sysvol\testdomain.com\OPF\', obviously substituting
 your domain name. These are in SYSVOL so that they stay in sync across all domain controllers, and the service checks file
 modification time at the start of servicing a request and will read in the lists again if it has changed, so restarting the OPF
