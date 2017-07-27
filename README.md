@@ -106,9 +106,6 @@ This file contains zero or more Active-Directory group names - one per line. The
 A user is considered to be in a group if they are a descendent child of the group. A user's password will only be checked 
 if the user is a member of any group listed in this file. If the file is present but contains no groups then every user will be checked.
 
-If the service fails to start, it's likely an error ingesting the wordlists, and the line number of the problem entry will be
-written to the Application event log.
-
 ## Event Logging
 The opfservice.exe application logs to the Application Event Log using codes 100, and 101. Searching the event log will identify what the opfservice is checking.
 If the service fails to start, it's likely an error ingesting the wordlists, and the line number of the problem entry will be
