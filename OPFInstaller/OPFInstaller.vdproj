@@ -39,6 +39,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_BD9A0F1A1DDF4D67BF9C94E6A90555A2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C7A8671CEFAE4BB396FF96C1C5BF9838"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_469D49EBA4BC4E3CA5DD1C05D7CE6C00"
         "MsmSig" = "8:_UNDEFINED"
@@ -68,6 +80,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.5"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.5 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.5"
+                    }
+                }
             }
         }
         "Release"
@@ -164,7 +184,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:.NETFramework,Version=v3.5"
+                "FrameworkVersion" = "8:.NETFramework,Version=v4.5.2"
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=395269"
                 }
@@ -196,6 +216,46 @@
             {
             "SourcePath" = "8:..\\Lists\\opfmatch.txt"
             "TargetName" = "8:opfmatch.txt"
+            "Tag" = "8:"
+            "Folder" = "8:_80DC76BAD614489C81AF7FB79EE3E6D5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BD9A0F1A1DDF4D67BF9C94E6A90555A2"
+            {
+            "SourcePath" = "8:..\\Lists\\opfgroups.txt"
+            "TargetName" = "8:opfgroups.txt"
+            "Tag" = "8:"
+            "Folder" = "8:_80DC76BAD614489C81AF7FB79EE3E6D5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C7A8671CEFAE4BB396FF96C1C5BF9838"
+            {
+            "SourcePath" = "8:..\\Lists\\opfregex.txt"
+            "TargetName" = "8:opfregex.txt"
             "Tag" = "8:"
             "Folder" = "8:_80DC76BAD614489C81AF7FB79EE3E6D5"
             "Condition" = "8:"
@@ -313,7 +373,7 @@
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
-        "TargetPlatform" = "3:0"
+        "TargetPlatform" = "3:1"
         "PreBuildEvent" = "8:"
         "PostBuildEvent" = "8:"
         "RunPostBuildEvent" = "3:0"
@@ -813,7 +873,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_469D49EBA4BC4E3CA5DD1C05D7CE6C00"
             {
-            "SourcePath" = "8:..\\OPFService\\obj\\x86\\Release\\OPFService.exe"
+            "SourcePath" = "8:..\\OPFService\\obj\\x64\\Release\\OPFService.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_80DC76BAD614489C81AF7FB79EE3E6D5"
@@ -841,7 +901,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6F1DB59EAEC0412FA544C31533037498"
             {
-            "SourcePath" = "8:..\\Release\\OpenPasswordFilter.dll"
+            "SourcePath" = "8:..\\x64\\Release\\OpenPasswordFilter.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_6A9EC007C35240AE89BA4BBE1E0C6D06"

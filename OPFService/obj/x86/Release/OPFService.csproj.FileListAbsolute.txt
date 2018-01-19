@@ -1,0 +1,9 @@
+C:\Users\robert.brock\Source\Repos\OpenPasswordFilter\OPFService\bin\x86\Release\OPFService.exe.config
+C:\Users\robert.brock\Source\Repos\OpenPasswordFilter\OPFService\bin\x86\Release\OPFService.exe
+C:\Users\robert.brock\Source\Repos\OpenPasswordFilter\OPFService\bin\x86\Release\OPFService.pdb
+C:\Users\robert.brock\Source\Repos\OpenPasswordFilter\OPFService\obj\x86\Release\OPFService.csprojResolveAssemblyReference.cache
+C:\Users\robert.brock\Source\Repos\OpenPasswordFilter\OPFService\obj\x86\Release\OPFService.OPFService.resources
+C:\Users\robert.brock\Source\Repos\OpenPasswordFilter\OPFService\obj\x86\Release\OPFService.ProjectInstaller.resources
+C:\Users\robert.brock\Source\Repos\OpenPasswordFilter\OPFService\obj\x86\Release\OPFService.csproj.GenerateResource.Cache
+C:\Users\robert.brock\Source\Repos\OpenPasswordFilter\OPFService\obj\x86\Release\OPFService.exe
+C:\Users\robert.brock\Source\Repos\OpenPasswordFilter\OPFService\obj\x86\Release\OPFService.pdb
