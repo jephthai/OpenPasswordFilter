@@ -54,8 +54,27 @@ Next, you will want to configure the OPF service.  You can do so as follows:
 
     > sc create OPF binPath= "<full path to exe>\opfservice.exe" start= boot
 
-Finally, create two dictionary files in the same directory where you placed opfservice.exe named `opfmatch.txt` and
-`opfcont.txt`.  These should contain one forbidden password per line, such as:
+You can then start or stop the OPF service from the command line (as an administrator) with:
+    
+    > NET START OPF
+
+or
+
+    > NET STOP OPF
+
+When the service is stopped, the various opf dictionary files can be updated.
+
+
+Finally, create several dictionary files in the same directory where you placed opfservice.exe.
+
+These are
+- `opfmatch.txt`
+- `opfcont.txt`
+- `opfregex.txt`
+- `opfgroups.txt`
+
+### opfmatch.txt and opfcont.txt
+These should contain one forbidden password per line, such as:
 
     Password1
     Password2
@@ -84,6 +103,16 @@ Or you can skip all this and use one of the installers.
    
    https://github.com/brockrob/OpenPasswordFilter/raw/master/OPFInstaller_x86.zip
 
+### opfregex.txt
+Similar to the opfmatch and opfconf files, include here regular expression - one per line - for invalid passwords. Example, including 'xx.*xx' will catch all passwords that have two x's followed by any text followed by two x's. Keep this list short as regular expression matching is more computationally expensive than simple matching or contains searches.
+
+### opfgroups.txt
+This file contains zero or more Active-Directory group names - one per line. These can be security or distribution groups. A user is considered to be in a group if they are a descendent child of the group. A user's password will only be checked if the user is a member of any group listed in this file. If the file is present but contains no groups then every user will be checked.
+
+## Event Logging
+The opfservice.exe application logs to the Application Event Log using codes 100, and 101. Searching the event log will identify what the opfservice is checking.
+
+## Production Installation Details
 The filter DLL bitness must match the OS, so choose correctly. .Net 3.5
 is still required and the installer won't handle installing it for you because Visual Studio packaging a bootstrap package for
 that version has been broken since 2008 and I didn't have the patience to roll a custom action to test the OS version and go
@@ -96,5 +125,4 @@ I've seen people base passwords on as well as some terms relevant to my environm
 
 If all has gone well, reboot your DC and test by using the normal GUI password reset function to choose a password that is on
 your forbidden list.
-
 
