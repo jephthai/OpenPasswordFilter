@@ -56,7 +56,8 @@ namespace OPFService {
                 string command = istream.ReadLine();
                 if (command == "test") {
                     string password = istream.ReadLine();
-                    ostream.WriteLine(dict.contains(password) ? "false" : "true");
+                    bool containsPassword = dict.contains(password);
+                    ostream.WriteLine(containsPassword ? "false" : "true");
                     ostream.Flush();
                 } else {
                     ostream.WriteLine("ERROR");
