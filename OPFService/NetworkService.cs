@@ -26,6 +26,8 @@ using System.IO;
 namespace OPFService {
     class NetworkService {
         OPFDictionary dict;
+        Socket listener;
+        int restarted = 0;
 
         public NetworkService(OPFDictionary d) {
             dict = d;
@@ -34,17 +36,32 @@ namespace OPFService {
         public void main() {
             IPAddress ip = IPAddress.Parse("127.0.0.1");
             IPEndPoint local = new IPEndPoint(ip, 5999);
-            Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-            try {
+            try
+            {
                 listener.Bind(local);
                 listener.Listen(64);
-                while (true) {
+                while (true)
+                {
                     Socket client = listener.Accept();
                     new Thread(() => handle(client)).Start();
                 }
-            } catch (Exception e) {
-                // don't know what to do here
+            }
+            catch (Exception e)
+            {
+                String exception = e.ToString();
+                //On a not sane restart, the Socket keeps the connection up for 30 seconds
+                //try a restart by calling main() again
+                if (exception.Contains("Only one usage of each socket address") && restarted < 4)
+                {
+                    restarted++;
+                    System.Threading.Thread.Sleep(30000);
+                    main();
+                }
+                else {
+                    throw; //shut the service down
+                }
             }
         }
 
@@ -67,6 +84,18 @@ namespace OPFService {
 
             }
             client.Close();
+        }
+
+        public void Close()
+        {
+            restarted = 0; //reset the counter
+            try
+            {
+                listener.Close();
+            }
+            catch (Exception e)
+            {
+            }
         }
     }
 }
