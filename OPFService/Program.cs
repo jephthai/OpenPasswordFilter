@@ -24,6 +24,7 @@ using System.IO;
 namespace OPFService {
     class OPFService : ServiceBase {
         Thread worker;
+        NetworkService svc;
 
         public OPFService() {
         }
@@ -36,13 +37,21 @@ namespace OPFService {
             base.OnStart(args);
             OPFDictionary d = new OPFDictionary(AppDomain.CurrentDomain.BaseDirectory + "\\opfmatch.txt", AppDomain.CurrentDomain.BaseDirectory + "opfcont.txt");
             // OPFDictionary d = new OPFDictionary("c:\\windows\\system32\\opfmatch.txt", "c:\\windows\\system32\\opfcont.txt");
-            NetworkService svc = new NetworkService(d);
+            svc = new NetworkService(d);
             worker = new Thread(() => svc.main());
             worker.Start();
         }
 
         protected override void OnShutdown() {
             base.OnShutdown();
+            svc.Close();
+            worker.Abort();
+        }
+
+        protected override void OnStop()
+        {
+            base.OnStop();
+            svc.Close();
             worker.Abort();
         }
 
