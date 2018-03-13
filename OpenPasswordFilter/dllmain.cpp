@@ -39,8 +39,41 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <SubAuth.h>
+#include <process.h>
+#include <codecvt>
 
 #pragma comment(lib, "Ws2_32.lib")
+
+using namespace std;
+
+struct PasswordFilterAccount {
+	PUNICODE_STRING AccountName;
+	PUNICODE_STRING FullName;
+	PUNICODE_STRING Password;
+};
+
+bool bPasswordOk = true;
+
+//
+// make sure all data is sent through the socket
+//
+int sendall(SOCKET s, const char *buf, int *len) {
+	int total = 0;        // how many bytes we've sent
+	int bytesleft = *len; // how many we have left to send
+	int n;
+
+	while (total < *len) {
+		n = send(s, buf + total, bytesleft, 0);
+		if (n == -1) { break; }
+		total += n;
+		bytesleft -= n;
+	}
+
+	*len = total; // return number actually sent here
+	SecureZeroMemory(&buf, sizeof(buf));
+
+	return n == -1 ? -1 : 0; // return -1 onm failure, 0 on success
+}
 
 // Regular DLL boilerplate
 
@@ -68,10 +101,11 @@ extern "C" __declspec(dllexport) BOOLEAN __stdcall InitializeChangeNotify(void) 
 	return TRUE;
 }
 
-extern "C" __declspec(dllexport) int __stdcall 
-PasswordChangeNotify(PUNICODE_STRING *UserName, 
-                     ULONG RelativeId, 
-                     PUNICODE_STRING *NewPassword) {
+extern "C" __declspec(dllexport) int __stdcall
+PasswordChangeNotify(PUNICODE_STRING *UserName,
+	ULONG RelativeId,
+	PUNICODE_STRING *NewPassword) {
+	SecureZeroMemory(&NewPassword, sizeof(NewPassword));
 	return 0;
 }
 
@@ -86,41 +120,52 @@ PasswordChangeNotify(PUNICODE_STRING *UserName,
 //
 //    <connect>
 //    client:   test\n
-//    client:   AccountName\nPassword1\n
+//    client:   Username\nPassword\n
 //    server:   false\n
 //    <disconnect>
 //
+void askServer(SOCKET sock, PUNICODE_STRING AccountName, PUNICODE_STRING Password) {
+	using convert_type = std::codecvt_utf8<wchar_t>;
+	std::wstring_convert<convert_type, wchar_t> converter;
+	char rcBuffer[1024];
+	char *preamble = "test\n"; //command that is used to start password testing
+	int i;
+	int len;
 
-BOOLEAN askServer(SOCKET sock, PUNICODE_STRING AccountName, PUNICODE_STRING Password) {
-	char buffer[1024], pbuffer[1024];
-	char *preamble = "test\n";
-	int ui, pi, i;
-
-	i = send(sock, preamble, (int)strlen(preamble), 0);
+	i = send(sock, preamble, (int)strlen(preamble), 0); //send test command
 	if (i != SOCKET_ERROR) {
-		// +4 for separator and null (really username\npassword\n\0 after strcat)
-		int length = Password->Length / sizeof(WCHAR) + AccountName->Length / sizeof(WCHAR) + 4; 
-		if (length < sizeof(buffer)) {
-			ui = wcstombs(buffer, AccountName->Buffer, AccountName->Length / sizeof(WCHAR));
-			buffer[ui] = '\n';
-			buffer[ui + 1] = '\0';
-			pi = wcstombs(pbuffer, Password->Buffer, Password->Length / sizeof(WCHAR));
-			pbuffer[pi] = '\n';
-			pbuffer[pi + 1] = '\0';
-			strcat_s(buffer, 1024, pbuffer);
-			SecureZeroMemory(pbuffer, pi);
-			i = send(sock, buffer, (int)strlen(buffer), 0);
-			SecureZeroMemory(buffer, length);
-			if (i != SOCKET_ERROR) {
-				i = recv(sock, buffer, sizeof(buffer), 0);
-				if (i > 0 && buffer[0] == 'f') {
-					return FALSE;
-				}
-			}
-		} // else: buffer overflow...
-	}
+		std::wstring wAccountName(AccountName->Buffer, AccountName->Length / sizeof(WCHAR));
+		wAccountName.push_back('\n');
+		std::wstring wPassword(Password->Buffer, Password->Length / sizeof(WCHAR));
+		wPassword.push_back('\n');
+		std::wstring wPayload(wAccountName + wPassword);
 
-	return TRUE;
+		std::string sPayload = converter.to_bytes(wPayload);
+
+		const char * cPayload = sPayload.c_str();
+		len = static_cast<int>(sPayload.size());
+		i = sendall(sock, cPayload, &len);
+		SecureZeroMemory(&AccountName, sizeof(AccountName));
+		SecureZeroMemory(&Password, sizeof(Password));
+		SecureZeroMemory(&wAccountName, sizeof(wAccountName));
+		SecureZeroMemory(&wPassword, sizeof(wPassword));
+		SecureZeroMemory(&wPayload, sizeof(wPayload));
+		SecureZeroMemory(&sPayload, sizeof(sPayload));
+		SecureZeroMemory(&cPayload, sizeof(cPayload));
+
+		if (i != SOCKET_ERROR) {
+			i = recv(sock, rcBuffer, sizeof(rcBuffer), 0);//read response
+			if (i > 0 && rcBuffer[0] == 'f') {
+				bPasswordOk = FALSE;
+			}
+		}
+		else {
+			//report error
+		}
+	}
+	else {
+		//report error
+	}
 }
 
 //
@@ -128,16 +173,15 @@ BOOLEAN askServer(SOCKET sock, PUNICODE_STRING AccountName, PUNICODE_STRING Pass
 // whether the indicated password is acceptable according to the filter service.
 // The service is a C# program also in this solution, titled "OPFService".
 //
+unsigned int __stdcall CreateSocket(void *v) {
+	//the account object
+	PasswordFilterAccount *pfAccount = static_cast<PasswordFilterAccount*>(v);
 
-extern "C" __declspec(dllexport) BOOLEAN __stdcall PasswordFilter(PUNICODE_STRING AccountName, 
-	                                                              PUNICODE_STRING FullName, 
-																  PUNICODE_STRING Password, 
-																  BOOLEAN SetOperation) {
 	SOCKET sock = INVALID_SOCKET;
 	struct addrinfo *result = NULL;
 	struct addrinfo *ptr = NULL;
 	struct addrinfo hints;
-	BOOLEAN retval = TRUE;
+	bPasswordOk = TRUE; // set fail open
 
 	int i;
 
@@ -149,13 +193,9 @@ extern "C" __declspec(dllexport) BOOLEAN __stdcall PasswordFilter(PUNICODE_STRIN
 	// This butt-ugly loop is straight out of Microsoft's reference example
 	// for a TCP client.  It's not my style, but how can the reference be
 	// wrong? ;-)
-
 	i = getaddrinfo("127.0.0.1", "5999", &hints, &result);
-
 	if (i == 0) {
-
 		for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
-
 			sock = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
 			if (sock == INVALID_SOCKET) {
 				break;
@@ -170,11 +210,47 @@ extern "C" __declspec(dllexport) BOOLEAN __stdcall PasswordFilter(PUNICODE_STRIN
 		}
 
 		if (sock != INVALID_SOCKET) {
-			retval = askServer(sock, AccountName, Password);
+			askServer(sock, pfAccount->AccountName, pfAccount->Password);
 			closesocket(sock);
 		}
 	}
-	
-	return retval;
+
+	return bPasswordOk;
 }
 
+extern "C" __declspec(dllexport) BOOLEAN __stdcall PasswordFilter(PUNICODE_STRING AccountName,
+	PUNICODE_STRING FullName,
+	PUNICODE_STRING Password,
+	BOOLEAN SetOperation) {
+
+	//build the account struct
+	PasswordFilterAccount *pfAccount = new PasswordFilterAccount();
+	pfAccount->AccountName = AccountName;
+	pfAccount->Password = Password;
+
+	//start an asynchronous thread to be able to kill the thread if it exceeds the timout
+	HANDLE pfHandle = (HANDLE)_beginthreadex(0, 0, CreateSocket, (LPVOID *)pfAccount, 0, 0);
+
+	DWORD dWaitFor = WaitForSingleObject(pfHandle, 30000); //do not exceed the timeout
+	if (dWaitFor == WAIT_TIMEOUT) {
+		//timeout exceeded
+	}
+	else if (dWaitFor == WAIT_OBJECT_0) {
+		//here is where we want to be
+	}
+	else {
+		//WAIT_ABANDONED
+		//WAIT_FAILED
+	}
+
+	if (pfHandle != INVALID_HANDLE_VALUE && pfHandle != 0) {
+		if (CloseHandle(pfHandle)) {
+			pfHandle = INVALID_HANDLE_VALUE;
+		}
+	}
+	SecureZeroMemory(&pfAccount, sizeof(pfAccount));
+	SecureZeroMemory(&AccountName, sizeof(AccountName));
+	SecureZeroMemory(&Password, sizeof(Password));
+	delete pfAccount;
+	return bPasswordOk;
+}

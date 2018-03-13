@@ -19,3 +19,8 @@ C:\Users\robert.brock\Source\Repos\OpenPasswordFilter\OPFService\obj\x64\Release
 C:\Users\robert.brock.AGNET\Source\Repos\OpenPasswordFilter\x64\Release\OPFService.exe.config
 C:\Users\robert.brock.AGNET\Source\Repos\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.exe
 C:\Users\robert.brock.AGNET\Source\Repos\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.pdb
+C:\Users\robert.brock.AGNET\Source\Repos\OpenPasswordFilter\x64\Release\OPFService.exe
+C:\Users\robert.brock.AGNET\Source\Repos\OpenPasswordFilter\x64\Release\OPFService.pdb
+C:\Users\robert.brock.AGNET\Source\Repos\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.OPFService.resources
+C:\Users\robert.brock.AGNET\Source\Repos\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.ProjectInstaller.resources
+C:\Users\robert.brock.AGNET\Source\Repos\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.csproj.GenerateResource.Cache

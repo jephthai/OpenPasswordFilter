@@ -31,6 +31,7 @@ namespace OPFService
   {
     OPFDictionary dict;
     OPFGroup group;
+    PwnedPasswordsAPI pwned = new PwnedPasswordsAPI();
     private void writeLog(string message, System.Diagnostics.EventLogEntryType level)
     {
       using (EventLog eventLog = new EventLog("Application"))
@@ -60,6 +61,7 @@ namespace OPFService
         while (true)
         {
           Socket client = listener.Accept();
+          writeLog("Connection accepted.", EventLogEntryType.Information);
           new Thread(() => handle(client)).Start();
         }
       }
@@ -83,6 +85,7 @@ namespace OPFService
         NetworkStream netStream = new NetworkStream(client);
         StreamReader istream = new StreamReader(netStream);
         StreamWriter ostream = new StreamWriter(netStream);
+        bool passwordIsBad = false;
         string command = istream.ReadLine();
         if (command == "test")
         {
@@ -92,12 +95,13 @@ namespace OPFService
           if (group.contains(username))
           {
             writeLog("User in a restricted group", EventLogEntryType.Information);
-            ostream.WriteLine(dict.contains(password, username) ? "false" : "true");
+            passwordIsBad = dict.contains(password, username);
+            if (passwordIsBad == false)
+            {
+              passwordIsBad = pwned.checkHashPrefix(password);
+            }
           }
-          else
-          {
-            ostream.WriteLine("true");
-          }
+          ostream.WriteLine(passwordIsBad ? "false" : "true");
           ostream.Flush();
         }
         else
