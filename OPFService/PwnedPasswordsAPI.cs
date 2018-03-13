@@ -69,10 +69,11 @@ namespace OPFService
             writeLog("This password is found in breach corpuses at haveibeenpwned.com", EventLogEntryType.Information);
             return true;
           }
-          else
-          {
-            writeLog("pwnedpasswords API returned an error.", EventLogEntryType.Error);
-          }
+        }
+        else
+        {
+          writeLog("PwnedPasswordsAPI returned an error", EventLogEntryType.Error);
+          return false;
         }
       }
       catch (Exception e)

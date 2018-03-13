@@ -61,7 +61,7 @@ namespace OPFService
         while (true)
         {
           Socket client = listener.Accept();
-          writeLog("Connection accepted.", EventLogEntryType.Information);
+          //writeLog("Connection accepted.", EventLogEntryType.Information);
           new Thread(() => handle(client)).Start();
         }
       }
@@ -94,7 +94,7 @@ namespace OPFService
           writeLog("Validating password for user " + username, EventLogEntryType.Information);
           if (group.contains(username))
           {
-            writeLog("User in a restricted group", EventLogEntryType.Information);
+            //writeLog("User in a restricted group", EventLogEntryType.Information);
             passwordIsBad = dict.contains(password, username);
             if (passwordIsBad == false)
             {

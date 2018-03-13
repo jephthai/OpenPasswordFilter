@@ -102,10 +102,9 @@ extern "C" __declspec(dllexport) BOOLEAN __stdcall InitializeChangeNotify(void) 
 }
 
 extern "C" __declspec(dllexport) int __stdcall
-PasswordChangeNotify(PUNICODE_STRING *UserName,
+PasswordChangeNotify(PUNICODE_STRING UserName,
 	ULONG RelativeId,
-	PUNICODE_STRING *NewPassword) {
-	SecureZeroMemory(&NewPassword, sizeof(NewPassword));
+	PUNICODE_STRING NewPassword) {
 	return 0;
 }
 
@@ -145,8 +144,6 @@ void askServer(SOCKET sock, PUNICODE_STRING AccountName, PUNICODE_STRING Passwor
 		const char * cPayload = sPayload.c_str();
 		len = static_cast<int>(sPayload.size());
 		i = sendall(sock, cPayload, &len);
-		SecureZeroMemory(&AccountName, sizeof(AccountName));
-		SecureZeroMemory(&Password, sizeof(Password));
 		SecureZeroMemory(&wAccountName, sizeof(wAccountName));
 		SecureZeroMemory(&wPassword, sizeof(wPassword));
 		SecureZeroMemory(&wPayload, sizeof(wPayload));
@@ -248,9 +245,6 @@ extern "C" __declspec(dllexport) BOOLEAN __stdcall PasswordFilter(PUNICODE_STRIN
 			pfHandle = INVALID_HANDLE_VALUE;
 		}
 	}
-	SecureZeroMemory(&pfAccount, sizeof(pfAccount));
-	SecureZeroMemory(&AccountName, sizeof(AccountName));
-	SecureZeroMemory(&Password, sizeof(Password));
 	delete pfAccount;
 	return bPasswordOk;
 }
