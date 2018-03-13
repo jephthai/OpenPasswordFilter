@@ -24,7 +24,7 @@ OPF is comprised of two main parts:
    2. OPFService.exe -- this is a C#-based service binary that provides a local user-space service for maintaining the dictionary and servicing requests.
   
 The DLL communicates with the service on the loopback network interface to check passwords against the configured database
-of forbidden values, as well as ensuring that the account's SAMAccountName, given name, surname, and display name are not in the password. This architecture is selected because it is difficult to reload the DLL after boot, and administrators are likely loathe to reboot their DCs when they want to add another forbidden password to the list.  Just bear in mind how this architecture works so you understand what's going on.
+of forbidden values, the pwnedpasswords API of haveibeenpwned.com (cheers to Troy Hunt for that - what a guy) as well as ensuring that the account's SAMAccountName, given name, surname, and display name are not in the password. This architecture is selected because it is difficult to reload the DLL after boot, and administrators are likely loathe to reboot their DCs when they want to add another forbidden password to the list.  Just bear in mind how this architecture works so you understand what's going on.
 
 **NOTE** The current version is very ALPHA!  I have tested it on some of my DCs, but your mileage may vary and you may wish to
 test in a safe location before using this in real life.
