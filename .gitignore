@@ -1729,3 +1729,10 @@ There are use cases where you have gulp/grunt tasks that create the static files
 </html>
 
 /OPFInstaller/Release
+*.cache
+*.db
+*.db-shm
+*.db-wal
+*.opendb
+*.suo
+/.vs
