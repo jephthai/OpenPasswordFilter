@@ -1736,3 +1736,14 @@ There are use cases where you have gulp/grunt tasks that create the static files
 *.opendb
 *.suo
 /.vs
+/OpenPasswordFilter/x64/Release
+/OpenPasswordFilter/OpenPasswordFilter.vcxproj.user
+*.idx
+*.srt
+*.tlog
+*.msi
+/Release/setup.exe
+/OPFTest/x64/Release
+/x64/Release/OpenPasswordFilter.dll
+/x64/Release
+/OPFTest/OPFTest.vcxproj.user
