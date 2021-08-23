@@ -14,8 +14,8 @@ namespace PasswordCheckerRay
         public static void IndexFile()
         {
             string datafolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "data");
-            var pathmatch = System.IO.Path.Combine(datafolder, "opfmatch.txt");
-            var nineindex = System.IO.Path.Combine(datafolder, "9.idx");
+            var pathmatch = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "opfmatch.txt");
+            var nineindex = Path.Combine(datafolder, "9.idx");
 
             if (
                     File.Exists(nineindex) && File.GetLastWriteTime(pathmatch) < File.GetLastWriteTime(nineindex)
