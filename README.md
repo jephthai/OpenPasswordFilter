@@ -5,6 +5,11 @@ Active Directory domain passwords. It is a an update of  jephthai/OpenPasswordFi
 and more efficient matching system, to check a large list of commopn (disallowed) passwords very quickly. It also has an updated
 installer.
 
+--
+A new approach introduced at Defcon 2022 has produced better results in testing.
+For the new approach, see [https://github.com/sensei-hacker/password-dog](https://github.com/sensei-hacker/password-dog)
+--
+
 The genesis of this idea comes from conducting many penetration tests where organizations have users who choose common passwords
 and the ultimate difficulty of controlling this behavior.  The fact is that any domain of size will have some user who chose
 `Password1` or `Summer2015` or `Company123` as their password.  Any intruder or low-privilege user who can guess or obtain
