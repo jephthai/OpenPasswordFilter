@@ -91,12 +91,12 @@ C:\Program Files\Confie Infosec\PasswordChecker\custom_sha256.txt
 Each line in the file should the SHA-256 of the lowercased version of the password, which can be obtained with
 the following Powershell:
 
-$clearString = "C0nfie1!" # Replace C0nfie1! With the password you want to disallow
+$clearString = "C0mpany1!" # Replace C0mpany1! With the password you want to disallow
 $hasher = [System.Security.Cryptography.HashAlgorithm]::Create('sha256')
 $hash = $hasher.ComputeHash( [System.Text.Encoding]::UTF8.GetBytes( $ClearString.ToLower() ) )
 [System.BitConverter]::ToString($hash).Replace('-', '').toLower() 
 
-This is the appropriate way to company-specific disallowed passwords like “C0nfie2021!”
+This is the appropriate way to company-specific disallowed passwords like “C0mpany2021!”
 The SHA256 hash is used in case you want to ban further use a password that is already used in the company. This will
 prevent the banned password from being used on new accounts, or having the password of an existing account changed to
 the banned password.  Using the hash avoids making the actual password available to anyone who might read the file. 
