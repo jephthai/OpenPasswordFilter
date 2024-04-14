@@ -1,6 +1,14 @@
 Introduction
 ------------
-OpenPasswordFilter is an open source custom password filter DLL and userspace service to better protect / control Active Directory domain passwords.
+OpenPasswordFilter is an open source custom password filter DLL and userspace service to better protect / control
+Active Directory domain passwords. It is a an update of  jephthai/OpenPasswordFilter. This version uses a much faster
+and more efficient matching system, to check a large list of commopn (disallowed) passwords very quickly. It also has an updated
+installer.
+
+--
+A new approach introduced at Defcon 2022 has produced better results in testing.
+For the new approach, see [https://github.com/sensei-hacker/password-dog](https://github.com/sensei-hacker/password-dog)
+--
 
 The genesis of this idea comes from conducting many penetration tests where organizations have users who choose common passwords
 and the ultimate difficulty of controlling this behavior.  The fact is that any domain of size will have some user who chose
@@ -21,7 +29,7 @@ passwords.
 OPF is comprised of two main parts:
 
    1. OpenPasswordFilter.dll -- this is a custom password filter DLL that can be loaded by LSASS to vet incoming password changes.
-   2. OPFService.exe -- this is a C#-based service binary that provides a local user-space service for maintaining the dictionary and servicing requests.
+   2. PasswordCheckerRay.exe -- this is a C#-based service binary that provides a local user-space service for maintaining the dictionary and servicing requests.
   
 The DLL communicates with the service on the loopback network interface to check passwords against the configured database
 of forbidden values.  This architecture is selected because it is difficult to reload the DLL after boot, and administrators
@@ -35,10 +43,14 @@ Installation
 ------------
 You can download a precompiled 64-bit version of OPF from the following link:
 
-[OPF-alpha.zip](https://github.com/brockrob/OpenPasswordFilter/raw/master/OPF-alpha.zip)
+[OpenPasswordFilter-release.zip](https://github.com/MorrisR2/OpenPasswordFilter/raw/master/OpenPasswordFilter-release.zip)
 
-You will want to configure the DLL so that Windows will load it for filtering passwords.  Note that you will have to do this
-on all domain controllers, as any of them may end up servicing a password change request.  Here is a link to Microsoft's
+Just run the installer in that zip file, then reboot.
+
+The installer does a couple of things in addition to putting the files in place.
+It configures the DLL so that Windows will load it for filtering passwords.  Note that this needs to be se tup on all
+on all domain controllers, as any of them may end up servicing a password change request. If for some reason you need to 
+do it manually rather thanusing the the incolude installer, here is a link to Microsoft's
 documentation for setting up a password filter:
 
     https://msdn.microsoft.com/en-us/library/windows/desktop/ms721766(v=vs.85).aspx
@@ -50,49 +62,55 @@ The bottom line is this:
   
 Note, you do not include the `.dll` extension in the registry key -- just `OpenPasswordFilter`.
 
-Next, you will want to configure the OPF service.  You can do so as follows:
+Next, you will want to configure the OPF service (unless you use the installer).  You can do so as follows:
 
-    > sc create OPF binPath= "<full path to exe>\opfservice.exe" start= boot
+    > sc create OPF binPath= "<full path to exe>\PasswordCheckerRay.exe" start=boot
 
-Finally, create two dictionary files in the same directory where you placed opfservice.exe named `opfmatch.txt` and
-`opfcont.txt`.  These should contain one forbidden password per line, such as:
+The system can use two dictionary files in the same directory where you installed PasswordChckerRay.exe, named
+`opfmatch.txt`and `custom_sha1.txt`. 
 
-    Password1
-    Password2
-    Company123
-    Summer15
-    Summer2015
-    ...
+For generic common passwords, simply add them to this file:
+C:\Program Files\Confie Infosec\PasswordChecker\data\opfmatch.txt
+Note this process leaves the disallowed passwords readable in plain text, so it should only be used for
+generic passwords like “Password123!”
 
-Passwords in `opfmatch.txt` will be tested for full matches, and those in `opfcont.txt` will be tested for a partial match. This
-is useful for rejecting any password containing poison strings such as `password` and `welcome`. I recommend constructing a list
-of bad seeds, then using hashcat rules to build `opfcont.txt` with the sort of leet mangling users are likely to try, like so:
+Passwords in `opfmatch.txt` will be tested for matches. The provided default list if the top million most
+commonly-used passwords. One could also use hashcat to make a list.  Notice the list is al lower case.
+OpenPasswordFilter will disallow these passwords regardless of casing used.  That is, if you disallow
+"password123", that will also automatically apply to "Password123" and "PASSWORD123".
 
-`hashcat -r /usr/share/hashcat/rules/Incisive-leetspeak.rule --stdout seedwordlist | tr A-Z a-z | sort | uniq > opfcont.txt`
+=Company-specific passwords that may be in use on your network=
 
-Bear in mind that if you use a unix like system to create your wordlists, the line terminators will need changing to Windows
-format:
+Passwords that may actually be in use on your network, such as default passwords that many people know, can be
+be handled differently. To disallow future re-use of a password that may currently be in use, a hash of the
+password needs to be added to a different file.
 
-`unix2dos opfcont.txt`
+To add custom disallowed passwords that may currently be in use, they can be added to the following file:
+
+C:\Program Files\Confie Infosec\PasswordChecker\custom_sha256.txt
+Each line in the file should the SHA-256 of the lowercased version of the password, which can be obtained with
+the following Powershell:
+
+$clearString = "C0mpany1!" # Replace C0mpany1! With the password you want to disallow
+$hasher = [System.Security.Cryptography.HashAlgorithm]::Create('sha256')
+$hash = $hasher.ComputeHash( [System.Text.Encoding]::UTF8.GetBytes( $ClearString.ToLower() ) )
+[System.BitConverter]::ToString($hash).Replace('-', '').toLower() 
+
+This is the appropriate way to company-specific disallowed passwords like “C0mpany2021!”
+The SHA256 hash is used in case you want to ban further use a password that is already used in the company. This will
+prevent the banned password from being used on new accounts, or having the password of an existing account changed to
+the banned password.  Using the hash avoids making the actual password available to anyone who might read the file. 
+
+
+Bear in mind that if you use a unix like system to create your wordlists, the line terminators will need changing to
+Windows format:
+
+`unix2dos opfmatch.txt`
 
 If the service fails to start, it's likely an error ingesting the wordlists, and the line number of the problem entry will be
 written to the Application event log.
 
-Or you can skip all this and use one of the installers. 
-
-   https://github.com/brockrob/OpenPasswordFilter/raw/master/OPFInstaller_x64.zip
-   
-   https://github.com/brockrob/OpenPasswordFilter/raw/master/OPFInstaller_x86.zip
-
-The filter DLL bitness must match the OS, so choose correctly. .Net 3.5
-is still required and the installer won't handle installing it for you because Visual Studio packaging a bootstrap package for
-that version has been broken since 2008 and I didn't have the patience to roll a custom action to test the OS version and go
-down the appropriate installation path (DISM vs .exe). I also can't set the reboot flag in the MSI with Visual Studio, so you'll
-have to manually do that as well, but it still saves some significant legwork.
-
-The installers include lists. The match list is rockyou.txt with every line less than ten characters stripped out, lowered,
-sorted, and de-duped. The other was made as described above with hashcat rules from a seed set containing some dumb words 
-I've seen people base passwords on as well as some terms relevant to my environment (company names, industry terms, etc).
+Or you can skip all this and use the installer. You WILL need to manually reboot adfter running the installer.
 
 If all has gone well, reboot your DC and test by using the normal GUI password reset function to choose a password that is on
 your forbidden list.
